@@ -1,4 +1,5 @@
 import { useTutorStore } from '../../presentation/stores/tutorStore';
+import { useAuthStore } from '../../presentation/stores/authStore';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000';
 
@@ -11,11 +12,15 @@ interface RequestOptions {
 async function request<T>(path: string, options: RequestOptions): Promise<T> {
   const { method, body, headers } = options;
   const tutorId = useTutorStore.getState().activeTutorId;
+  const token = useAuthStore.getState().token;
 
   const allHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
     ...headers,
   };
+  if (token) {
+    allHeaders['Authorization'] = `Bearer ${token}`;
+  }
   if (tutorId) {
     allHeaders['x-tutor-id'] = tutorId;
   }

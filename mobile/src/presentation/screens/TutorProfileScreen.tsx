@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTutorStore } from '../stores/tutorStore';
+import { useAuthStore } from '../stores/authStore';
 import { useTutors } from '../hooks/useTutors';
 import { TutorSelector } from '../components/tutor/TutorSelector';
 import { LoadingSpinner } from '../components/shared/LoadingSpinner';
@@ -93,6 +94,28 @@ export function TutorProfileScreen() {
           </TouchableOpacity>
         </View>
       )}
+
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={() => {
+          Alert.alert('Sair', 'Deseja realmente sair?', [
+            { text: 'Cancelar', style: 'cancel' },
+            {
+              text: 'Sair',
+              style: 'destructive',
+              onPress: () => {
+                useAuthStore.getState().logout();
+                useTutorStore.getState().clearActiveTutor();
+                router.replace('/login');
+              },
+            },
+          ]);
+        }}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.logoutIcon}>🚪</Text>
+        <Text style={styles.logoutText}>Sair da conta</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -131,4 +154,11 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md, paddingHorizontal: spacing.xxxl, marginTop: spacing.lg,
   },
   editButtonText: { color: colors.primary, fontSize: fontSize.md, fontWeight: '700' },
+  logoutButton: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.dangerSoft, borderRadius: radius.lg,
+    padding: spacing.lg, marginTop: spacing.xxl, marginBottom: 40,
+  },
+  logoutIcon: { fontSize: 18, marginRight: spacing.sm },
+  logoutText: { fontSize: fontSize.md, fontWeight: '600', color: colors.danger },
 });
