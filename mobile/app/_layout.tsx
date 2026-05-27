@@ -57,6 +57,14 @@ export default function RootLayout() {
             title: 'Editar Tutor',
           }}
         />
+        <Stack.Screen
+          name="pet/[id]/vaccination"
+          options={{
+            title: 'Registrar Vacina',
+            presentation: 'modal',
+            headerStyle: { backgroundColor: '#6C63FF' },
+          }}
+        />
       </Stack>
     </QueryClientProvider>
   );

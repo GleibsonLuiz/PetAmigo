@@ -96,7 +96,7 @@ export default function PetDetailScreen() {
             <Text style={styles.emptyEmoji}>💉</Text>
             <Text style={styles.emptyTitle}>Sem vacinas registradas</Text>
             <Text style={styles.emptySub}>
-              Registre a primeira vacinação do {pet.name}
+              Toque no botão + para registrar{'\n'}a primeira vacina de {pet.name}
             </Text>
           </View>
         }
@@ -109,6 +109,15 @@ export default function PetDetailScreen() {
           />
         )}
       />
+
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => router.push(`/pet/${id}/vaccination`)}
+        activeOpacity={0.85}
+      >
+        <Text style={styles.fabIcon}>💉</Text>
+        <Text style={styles.fabLabel}>Vacinar</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -248,5 +257,28 @@ const styles = StyleSheet.create({
     fontSize: fontSize.md,
     color: colors.textSecondary,
     marginTop: spacing.sm,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  fab: {
+    position: 'absolute',
+    right: spacing.xl,
+    bottom: spacing.xl,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: radius.full,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xl,
+    ...shadow.lg,
+  },
+  fabIcon: {
+    fontSize: 18,
+    marginRight: spacing.sm,
+  },
+  fabLabel: {
+    color: colors.textInverse,
+    fontSize: fontSize.md,
+    fontWeight: '700',
   },
 });
