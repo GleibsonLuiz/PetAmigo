@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { usePets } from '../../src/presentation/hooks/usePets';
 import { useVaccinations } from '../../src/presentation/hooks/useVaccinations';
 import { LoadingSpinner } from '../../src/presentation/components/shared/LoadingSpinner';
+import { WebContainer } from '../../src/presentation/components/shared/WebContainer';
 import {
   colors,
   spacing,
@@ -65,6 +66,7 @@ export default function VaccinesTab() {
   if (isLoading) return <LoadingSpinner />;
 
   return (
+    <WebContainer>
     <View style={styles.container}>
       <FlatList
         data={pets}
@@ -92,6 +94,7 @@ export default function VaccinesTab() {
         )}
       />
     </View>
+    </WebContainer>
   );
 }
 

@@ -16,6 +16,7 @@ import { useAllVaccinations } from '../hooks/useVaccinations';
 import { useAllGrooming } from '../hooks/useGrooming';
 import { TutorSelector } from '../components/tutor/TutorSelector';
 import { LoadingSpinner } from '../components/shared/LoadingSpinner';
+import { WebContainer } from '../components/shared/WebContainer';
 import { Tutor } from '../../domain/entities/Tutor';
 import { SERVICE_TYPE_LABELS, SERVICE_TYPE_EMOJI, GroomingServiceType } from '../../domain/entities/Grooming';
 import {
@@ -140,6 +141,7 @@ export function DashboardScreen() {
   const totalVaccines = allVaccinations?.length ?? 0;
 
   return (
+    <WebContainer>
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {tutors && tutors.length > 1 && (
         <View style={styles.tutorRow}>
@@ -416,6 +418,7 @@ export function DashboardScreen() {
 
       <View style={{ height: 40 }} />
     </ScrollView>
+    </WebContainer>
   );
 }
 

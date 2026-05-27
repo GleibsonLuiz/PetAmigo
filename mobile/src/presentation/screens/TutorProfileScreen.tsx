@@ -6,6 +6,7 @@ import { useAuthStore } from '../stores/authStore';
 import { useTutors } from '../hooks/useTutors';
 import { TutorSelector } from '../components/tutor/TutorSelector';
 import { LoadingSpinner } from '../components/shared/LoadingSpinner';
+import { WebContainer } from '../components/shared/WebContainer';
 import { Tutor } from '../../domain/entities/Tutor';
 import { colors, spacing, radius, fontSize, shadow } from '../../shared/theme';
 
@@ -40,6 +41,7 @@ export function TutorProfileScreen() {
   const currentTutor = activeTutor ?? tutors[0];
 
   return (
+    <WebContainer>
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
         <Text style={styles.headerEmoji}>👥</Text>
@@ -117,6 +119,7 @@ export function TutorProfileScreen() {
         <Text style={styles.logoutText}>Sair da conta</Text>
       </TouchableOpacity>
     </ScrollView>
+    </WebContainer>
   );
 }
 

@@ -12,6 +12,7 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '../../infrastructure/api/client';
 import { useAuthStore } from '../stores/authStore';
 import { LoadingSpinner } from '../components/shared/LoadingSpinner';
+import { WebContainer } from '../components/shared/WebContainer';
 import { colors, spacing, radius, fontSize, shadow } from '../../shared/theme';
 
 interface AdminStats {
@@ -63,6 +64,7 @@ export function AdminScreen() {
   if (loadingStats || loadingUsers) return <LoadingSpinner />;
 
   return (
+    <WebContainer maxWidth={720}>
     <ScrollView
       style={styles.container}
       showsVerticalScrollIndicator={false}
@@ -146,6 +148,7 @@ export function AdminScreen() {
 
       <View style={{ height: 40 }} />
     </ScrollView>
+    </WebContainer>
   );
 }
 

@@ -15,6 +15,7 @@ import { usePetStore } from '../stores/petStore';
 import { useTutorStore } from '../stores/tutorStore';
 import { TutorSelector } from '../components/tutor/TutorSelector';
 import { LoadingSpinner } from '../components/shared/LoadingSpinner';
+import { WebContainer } from '../components/shared/WebContainer';
 import { Pet } from '../../domain/entities/Pet';
 import { Tutor } from '../../domain/entities/Tutor';
 import {
@@ -81,6 +82,7 @@ export function PetListScreen() {
   }
 
   return (
+    <WebContainer>
     <View style={styles.container}>
       <FlatList
         data={pets}
@@ -161,6 +163,7 @@ export function PetListScreen() {
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
     </View>
+    </WebContainer>
   );
 }
 
