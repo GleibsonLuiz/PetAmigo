@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTutorStore } from '../stores/tutorStore';
 import { useAuthStore } from '../stores/authStore';
@@ -213,18 +213,20 @@ export function TutorProfileScreen() {
       <TouchableOpacity
         style={styles.logoutButton}
         onPress={() => {
-          Alert.alert('Sair', 'Deseja realmente sair?', [
-            { text: 'Cancelar', style: 'cancel' },
-            {
-              text: 'Sair',
-              style: 'destructive',
-              onPress: () => {
-                useAuthStore.getState().logout();
-                useTutorStore.getState().clearActiveTutor();
-                router.replace('/login');
-              },
-            },
-          ]);
+          const doLogout = () => {
+            useAuthStore.getState().logout();
+            useTutorStore.getState().clearActiveTutor();
+            router.replace('/login');
+          };
+
+          if (Platform.OS === 'web') {
+            if (window.confirm('Deseja realmente sair?')) doLogout();
+          } else {
+            Alert.alert('Sair', 'Deseja realmente sair?', [
+              { text: 'Cancelar', style: 'cancel' },
+              { text: 'Sair', style: 'destructive', onPress: doLogout },
+            ]);
+          }
         }}
         activeOpacity={0.7}
       >
