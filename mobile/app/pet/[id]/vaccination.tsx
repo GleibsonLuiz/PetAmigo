@@ -27,7 +27,6 @@ export default function AddVaccinationScreen() {
       },
     });
   };
-  };
 
   return (
     <VaccinationForm
