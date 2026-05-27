@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Platform,
+  useWindowDimensions,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
@@ -140,8 +142,11 @@ export function DashboardScreen() {
   const totalPets = pets?.length ?? 0;
   const totalVaccines = allVaccinations?.length ?? 0;
 
+  const { width: screenWidth } = useWindowDimensions();
+  const isDesktop = Platform.OS === 'web' && screenWidth > 800;
+
   return (
-    <WebContainer>
+    <WebContainer maxWidth={1200}>
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {tutors && tutors.length > 1 && (
         <View style={styles.tutorRow}>
@@ -204,6 +209,10 @@ export function DashboardScreen() {
           <Text style={styles.statLabel}>Próximas</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Two column layout on desktop */}
+      <View style={isDesktop ? styles.desktopGrid : undefined}>
+      <View style={isDesktop ? styles.desktopColumn : undefined}>
 
       {/* Overdue Alert */}
       {overdueVaccines.length > 0 && (
@@ -301,6 +310,9 @@ export function DashboardScreen() {
         </View>
       )}
 
+      </View>{/* end first column */}
+      <View style={isDesktop ? styles.desktopColumn : undefined}>
+
       {/* Grooming Overdue */}
       {overdueGroomings.length > 0 && (
         <View style={styles.groomAlertCard}>
@@ -385,6 +397,9 @@ export function DashboardScreen() {
         </View>
       )}
 
+      </View>{/* end second column */}
+      </View>{/* end desktop grid */}
+
       {/* Quick Actions */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>⚡ Ações rápidas</Text>
@@ -438,6 +453,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 48, marginTop: spacing.xxxl, ...shadow.md,
   },
   onboardingButtonText: { color: colors.textInverse, fontSize: fontSize.lg, fontWeight: '700' },
+
+  desktopGrid: { flexDirection: 'row', gap: spacing.xl },
+  desktopColumn: { flex: 1 },
 
   statsGrid: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.xl },
   statCard: {

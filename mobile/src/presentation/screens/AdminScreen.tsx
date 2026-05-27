@@ -64,7 +64,7 @@ export function AdminScreen() {
   if (loadingStats || loadingUsers) return <LoadingSpinner />;
 
   return (
-    <WebContainer maxWidth={720}>
+    <WebContainer maxWidth={1100}>
     <ScrollView
       style={styles.container}
       showsVerticalScrollIndicator={false}

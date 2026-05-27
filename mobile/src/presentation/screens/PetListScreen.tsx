@@ -82,7 +82,7 @@ export function PetListScreen() {
   }
 
   return (
-    <WebContainer>
+    <WebContainer maxWidth={1000}>
     <View style={styles.container}>
       <FlatList
         data={pets}
