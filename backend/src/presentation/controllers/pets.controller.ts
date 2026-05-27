@@ -6,21 +6,26 @@ import {
   Delete,
   Body,
   Param,
+  Headers,
+  BadRequestException,
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { PetsService } from '../../application/pets/pets.service';
 import { CreatePetDto } from '../dtos/create-pet.dto';
 import { UpdatePetDto } from '../dtos/update-pet.dto';
 
-const DEV_OWNER_ID = '00000000-0000-0000-0000-000000000001';
-
 @Controller('pets')
 export class PetsController {
   constructor(private readonly petsService: PetsService) {}
 
+  private getTutorId(tutorId?: string): string {
+    if (!tutorId) throw new BadRequestException('Header x-tutor-id é obrigatório');
+    return tutorId;
+  }
+
   @Get()
-  findAll() {
-    return this.petsService.findAll(DEV_OWNER_ID);
+  findAll(@Headers('x-tutor-id') tutorId?: string) {
+    return this.petsService.findAll(this.getTutorId(tutorId));
   }
 
   @Get(':id')
@@ -29,8 +34,11 @@ export class PetsController {
   }
 
   @Post()
-  create(@Body() dto: CreatePetDto) {
-    return this.petsService.create(DEV_OWNER_ID, dto);
+  create(
+    @Headers('x-tutor-id') tutorId: string,
+    @Body() dto: CreatePetDto,
+  ) {
+    return this.petsService.create(this.getTutorId(tutorId), dto);
   }
 
   @Patch(':id')

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,10 +8,15 @@ import {
   Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 import { usePets } from '../hooks/usePets';
+import { useTutors } from '../hooks/useTutors';
 import { usePetStore } from '../stores/petStore';
+import { useTutorStore } from '../stores/tutorStore';
+import { TutorSelector } from '../components/tutor/TutorSelector';
 import { LoadingSpinner } from '../components/shared/LoadingSpinner';
 import { Pet } from '../../domain/entities/Pet';
+import { Tutor } from '../../domain/entities/Tutor';
 import {
   colors,
   spacing,
@@ -25,15 +30,45 @@ import {
 
 export function PetListScreen() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { data: pets, isLoading, error } = usePets();
+  const { data: tutors, isLoading: loadingTutors } = useTutors();
   const { selectPet } = usePetStore();
+  const { activeTutorId, setActiveTutor } = useTutorStore();
+
+  useEffect(() => {
+    if (!activeTutorId && tutors?.length) {
+      setActiveTutor(tutors[0]);
+    }
+  }, [tutors, activeTutorId]);
+
+  const handleSelectTutor = (tutor: Tutor) => {
+    setActiveTutor(tutor);
+    queryClient.invalidateQueries({ queryKey: ['pets'] });
+  };
 
   const handlePressPet = (pet: Pet) => {
     selectPet(pet);
     router.push(`/pet/${pet.id}`);
   };
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading || loadingTutors) return <LoadingSpinner />;
+
+  if (!tutors?.length) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.emptyEmoji}>👤</Text>
+        <Text style={styles.emptyTitle}>Cadastre um tutor</Text>
+        <Text style={styles.emptySub}>Para começar, cadastre o tutor responsável.</Text>
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={() => router.push('/tutor/new')}
+        >
+          <Text style={styles.fabText}>+</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   if (error) {
     return (
@@ -53,12 +88,22 @@ export function PetListScreen() {
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>
-              {pets && pets.length > 0
-                ? `${pets.length} pet${pets.length > 1 ? 's' : ''} cadastrado${pets.length > 1 ? 's' : ''}`
-                : ''}
-            </Text>
+          <View>
+            {tutors && tutors.length > 1 && (
+              <TutorSelector
+                tutors={tutors}
+                activeTutorId={activeTutorId}
+                onSelect={handleSelectTutor}
+                onAddNew={() => router.push('/tutor/new')}
+              />
+            )}
+            <View style={styles.header}>
+              <Text style={styles.headerTitle}>
+                {pets && pets.length > 0
+                  ? `${pets.length} pet${pets.length > 1 ? 's' : ''} cadastrado${pets.length > 1 ? 's' : ''}`
+                  : ''}
+              </Text>
+            </View>
           </View>
         }
         ListEmptyComponent={

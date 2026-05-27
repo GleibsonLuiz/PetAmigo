@@ -1,3 +1,5 @@
+import { useTutorStore } from '../../presentation/stores/tutorStore';
+
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000';
 
 interface RequestOptions {
@@ -8,13 +10,19 @@ interface RequestOptions {
 
 async function request<T>(path: string, options: RequestOptions): Promise<T> {
   const { method, body, headers } = options;
+  const tutorId = useTutorStore.getState().activeTutorId;
+
+  const allHeaders: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...headers,
+  };
+  if (tutorId) {
+    allHeaders['x-tutor-id'] = tutorId;
+  }
 
   const response = await fetch(`${BASE_URL}${path}`, {
     method,
-    headers: {
-      'Content-Type': 'application/json',
-      ...headers,
-    },
+    headers: allHeaders,
     body: body ? JSON.stringify(body) : undefined,
   });
 

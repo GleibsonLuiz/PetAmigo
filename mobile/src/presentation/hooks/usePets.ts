@@ -1,13 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { PetRepositoryImpl } from '../../infrastructure/repositories/PetRepositoryImpl';
 import { CreatePetInput, UpdatePetInput } from '../../domain/entities/Pet';
+import { useTutorStore } from '../stores/tutorStore';
 
 const petRepo = new PetRepositoryImpl();
 
 export function usePets() {
+  const activeTutorId = useTutorStore((s) => s.activeTutorId);
   return useQuery({
-    queryKey: ['pets'],
+    queryKey: ['pets', { tutorId: activeTutorId }],
     queryFn: () => petRepo.findAll(),
+    enabled: !!activeTutorId,
   });
 }
 

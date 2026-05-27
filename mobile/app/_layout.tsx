@@ -41,6 +41,20 @@ export default function RootLayout() {
             headerTransparent: true,
           }}
         />
+        <Stack.Screen
+          name="tutor/new"
+          options={{
+            title: 'Novo Tutor',
+            presentation: 'modal',
+            headerStyle: { backgroundColor: '#6C63FF' },
+          }}
+        />
+        <Stack.Screen
+          name="tutor/[id]"
+          options={{
+            title: 'Editar Tutor',
+          }}
+        />
       </Stack>
     </QueryClientProvider>
   );
