@@ -1,11 +1,11 @@
 import React from 'react';
-import { Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTutor, useUpdateTutor } from '../../src/presentation/hooks/useTutors';
 import { useTutorStore } from '../../src/presentation/stores/tutorStore';
 import { TutorForm } from '../../src/presentation/components/tutor/TutorForm';
 import { LoadingSpinner } from '../../src/presentation/components/shared/LoadingSpinner';
 import { CreateTutorInput } from '../../src/domain/entities/Tutor';
+import { notify } from '../../src/shared/utils/notify';
 
 export default function EditTutorScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -23,12 +23,10 @@ export default function EditTutorScreen() {
         if (store.activeTutorId === id) {
           store.setActiveTutor(updated);
         }
-        Alert.alert('Atualizado!', 'Perfil salvo com sucesso.', [
-          { text: 'OK', onPress: () => router.back() },
-        ]);
+        notify('Atualizado! ✅', 'Perfil salvo com sucesso.', () => router.back());
       },
       onError: () => {
-        Alert.alert('Erro', 'Não foi possível salvar.');
+        notify('Erro', 'Não foi possível salvar.');
       },
     });
   };

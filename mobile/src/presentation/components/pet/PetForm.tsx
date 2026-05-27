@@ -6,13 +6,13 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Alert,
   Image,
   Modal,
   FlatList,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { CreatePetInput, PetSpecies } from '../../../domain/entities/Pet';
+import { notify } from '../../../shared/utils/notify';
 import { BREEDS_BY_SPECIES } from '../../../shared/data/breeds';
 import {
   colors,
@@ -92,17 +92,17 @@ export function PetForm({ onSubmit, isLoading, initialData }: PetFormProps) {
 
   const handleSubmit = () => {
     if (!name.trim()) {
-      Alert.alert('Campo obrigatório', 'Informe o nome do pet.');
+      notify('Campo obrigatório', 'Informe o nome do pet.');
       return;
     }
     if (!birthDate.trim()) {
-      Alert.alert('Campo obrigatório', 'Informe a data de nascimento.');
+      notify('Campo obrigatório', 'Informe a data de nascimento.');
       return;
     }
 
     const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
     if (!dateRegex.test(birthDate)) {
-      Alert.alert('Data inválida', 'Use o formato DD/MM/AAAA.');
+      notify('Data inválida', 'Use o formato DD/MM/AAAA.');
       return;
     }
 

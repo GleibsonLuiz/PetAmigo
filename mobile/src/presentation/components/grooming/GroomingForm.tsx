@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Alert,
 } from 'react-native';
+import { notify } from '../../../shared/utils/notify';
 import {
   GroomingServiceType,
   CreateGroomingInput,
@@ -61,21 +61,21 @@ export function GroomingForm({ petId, petName, onSubmit, isLoading }: GroomingFo
 
   const handleSubmit = () => {
     if (!location.trim()) {
-      Alert.alert('Campo obrigatório', 'Informe o local do banho.');
+      notify('Campo obrigatório', 'Informe o local do banho.');
       return;
     }
     if (!groomingDate.trim()) {
-      Alert.alert('Campo obrigatório', 'Informe a data do banho.');
+      notify('Campo obrigatório', 'Informe a data do banho.');
       return;
     }
     const isoDate = parseDate(groomingDate);
     if (!isoDate) {
-      Alert.alert('Data inválida', 'Use o formato DD/MM/AAAA.');
+      notify('Data inválida', 'Use o formato DD/MM/AAAA.');
       return;
     }
     const isoNextDate = nextDate.trim() ? parseDate(nextDate) : undefined;
     if (nextDate.trim() && !isoNextDate) {
-      Alert.alert('Data inválida', 'Próximo banho: use DD/MM/AAAA.');
+      notify('Data inválida', 'Próximo banho: use DD/MM/AAAA.');
       return;
     }
 

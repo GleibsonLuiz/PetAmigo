@@ -6,11 +6,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Alert,
   Modal,
   FlatList,
 } from 'react-native';
 import { Vaccine, CreateVaccinationInput } from '../../../domain/entities/Vaccination';
+import { notify } from '../../../shared/utils/notify';
 import { colors, spacing, radius, fontSize, shadow } from '../../../shared/theme';
 
 interface VaccinationFormProps {
@@ -45,17 +45,17 @@ export function VaccinationForm({
 
   const handleSubmit = () => {
     if (!selectedVaccine) {
-      Alert.alert('Campo obrigatório', 'Selecione a vacina.');
+      notify('Campo obrigatório', 'Selecione a vacina.');
       return;
     }
     if (!applicationDate.trim()) {
-      Alert.alert('Campo obrigatório', 'Informe a data de aplicação.');
+      notify('Campo obrigatório', 'Informe a data de aplicação.');
       return;
     }
 
     const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
     if (!dateRegex.test(applicationDate)) {
-      Alert.alert('Data inválida', 'Use o formato DD/MM/AAAA.');
+      notify('Data inválida', 'Use o formato DD/MM/AAAA.');
       return;
     }
 

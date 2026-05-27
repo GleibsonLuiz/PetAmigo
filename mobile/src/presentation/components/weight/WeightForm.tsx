@@ -6,9 +6,9 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Alert,
 } from 'react-native';
 import { CreateWeightInput } from '../../../domain/entities/Weight';
+import { notify } from '../../../shared/utils/notify';
 import { colors, spacing, radius, fontSize, shadow } from '../../../shared/theme';
 
 interface WeightFormProps {
@@ -40,16 +40,16 @@ export function WeightForm({ petId, petName, lastWeight, onSubmit, isLoading }: 
   const handleSubmit = () => {
     const w = parseFloat(weight);
     if (!weight || isNaN(w) || w <= 0) {
-      Alert.alert('Campo obrigatório', 'Informe o peso (em kg).');
+      notify('Campo obrigatório', 'Informe o peso (em kg).');
       return;
     }
     if (!date.trim()) {
-      Alert.alert('Campo obrigatório', 'Informe a data da pesagem.');
+      notify('Campo obrigatório', 'Informe a data da pesagem.');
       return;
     }
     const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
     if (!dateRegex.test(date)) {
-      Alert.alert('Data inválida', 'Use o formato DD/MM/AAAA.');
+      notify('Data inválida', 'Use o formato DD/MM/AAAA.');
       return;
     }
     const [day, month, year] = date.split('/').map(Number);

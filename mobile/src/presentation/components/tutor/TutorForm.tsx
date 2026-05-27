@@ -6,11 +6,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Alert,
   Image,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { CreateTutorInput } from '../../../domain/entities/Tutor';
+import { notify } from '../../../shared/utils/notify';
 import { colors, spacing, radius, fontSize, shadow } from '../../../shared/theme';
 
 interface TutorFormProps {
@@ -49,7 +49,7 @@ export function TutorForm({ onSubmit, isLoading, initialData, submitLabel }: Tut
 
   const handleSubmit = () => {
     if (!name.trim()) {
-      Alert.alert('Campo obrigatório', 'Informe o nome do tutor.');
+      notify('Campo obrigatório', 'Informe o nome do tutor.');
       return;
     }
     onSubmit({

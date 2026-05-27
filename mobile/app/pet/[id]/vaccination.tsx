@@ -1,11 +1,11 @@
 import React from 'react';
-import { Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { usePet } from '../../../src/presentation/hooks/usePets';
 import { useAvailableVaccines, useCreateVaccination } from '../../../src/presentation/hooks/useVaccinations';
 import { VaccinationForm } from '../../../src/presentation/components/vaccination/VaccinationForm';
 import { LoadingSpinner } from '../../../src/presentation/components/shared/LoadingSpinner';
 import { CreateVaccinationInput } from '../../../src/domain/entities/Vaccination';
+import { notify } from '../../../src/shared/utils/notify';
 
 export default function AddVaccinationScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -20,14 +20,13 @@ export default function AddVaccinationScreen() {
   const handleSubmit = (data: CreateVaccinationInput) => {
     createVaccination.mutate(data, {
       onSuccess: () => {
-        Alert.alert('Registrado! 💉', `Vacina de ${pet.name} registrada com sucesso.`, [
-          { text: 'OK', onPress: () => router.back() },
-        ]);
+        notify('Registrado! 💉', `Vacina de ${pet.name} registrada com sucesso.`, () => router.back());
       },
       onError: () => {
-        Alert.alert('Erro', 'Não foi possível registrar a vacina.');
+        notify('Erro', 'Não foi possível registrar a vacina.');
       },
     });
+  };
   };
 
   return (

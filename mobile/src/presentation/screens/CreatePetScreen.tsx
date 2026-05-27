@@ -1,9 +1,9 @@
 import React from 'react';
-import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { PetForm } from '../components/pet/PetForm';
 import { useCreatePet } from '../hooks/usePets';
 import { CreatePetInput } from '../../domain/entities/Pet';
+import { notify } from '../../shared/utils/notify';
 
 export function CreatePetScreen() {
   const router = useRouter();
@@ -12,12 +12,10 @@ export function CreatePetScreen() {
   const handleSubmit = (data: CreatePetInput) => {
     createPet.mutate(data, {
       onSuccess: () => {
-        Alert.alert('Pronto! 🎉', `${data.name} foi cadastrado com sucesso!`, [
-          { text: 'Ver meus pets', onPress: () => router.back() },
-        ]);
+        notify('Pronto! 🎉', `${data.name} foi cadastrado com sucesso!`, () => router.back());
       },
       onError: () => {
-        Alert.alert('Ops! 😿', 'Não foi possível cadastrar o pet. Tente novamente.');
+        notify('Ops! 😿', 'Não foi possível cadastrar o pet. Tente novamente.');
       },
     });
   };

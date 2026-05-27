@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTutorStore } from '../stores/tutorStore';
 import { useAuthStore } from '../stores/authStore';
@@ -7,6 +7,7 @@ import { useTutors } from '../hooks/useTutors';
 import { LoadingSpinner } from '../components/shared/LoadingSpinner';
 import { WebContainer } from '../components/shared/WebContainer';
 import { api } from '../../infrastructure/api/client';
+import { notify, confirm } from '../../shared/utils/notify';
 import { colors, spacing, radius, fontSize, shadow } from '../../shared/theme';
 
 function ChangePasswordSection() {
@@ -31,28 +32,28 @@ function ChangePasswordSection() {
 
   const handleSubmit = async () => {
     if (!currentPassword) {
-      Alert.alert('Campo obrigatório', 'Informe a senha atual.');
+      notify('Campo obrigatório', 'Informe a senha atual.');
       return;
     }
     if (newPassword.length < 6) {
-      Alert.alert('Senha fraca', 'A nova senha deve ter no mínimo 6 caracteres.');
+      notify('Senha fraca', 'A nova senha deve ter no mínimo 6 caracteres.');
       return;
     }
     if (newPassword !== confirmPassword) {
-      Alert.alert('Senhas diferentes', 'A confirmação não confere com a nova senha.');
+      notify('Senhas diferentes', 'A confirmação não confere com a nova senha.');
       return;
     }
 
     setLoading(true);
     try {
       await api.post('/auth/change-password', { currentPassword, newPassword });
-      Alert.alert('Sucesso! 🔐', 'Sua senha foi alterada.');
+      notify('Sucesso! 🔐', 'Sua senha foi alterada.');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
       setExpanded(false);
     } catch (err: any) {
-      Alert.alert('Erro', err.message ?? 'Não foi possível alterar a senha.');
+      notify('Erro', err.message ?? 'Não foi possível alterar a senha.');
     } finally {
       setLoading(false);
     }
@@ -183,20 +184,11 @@ export function TutorProfileScreen() {
       <TouchableOpacity
         style={styles.logoutButton}
         onPress={() => {
-          const doLogout = () => {
+          confirm('Sair', 'Deseja realmente sair?', () => {
             useAuthStore.getState().logout();
             useTutorStore.getState().clearActiveTutor();
             router.replace('/login');
-          };
-
-          if (Platform.OS === 'web') {
-            if (window.confirm('Deseja realmente sair?')) doLogout();
-          } else {
-            Alert.alert('Sair', 'Deseja realmente sair?', [
-              { text: 'Cancelar', style: 'cancel' },
-              { text: 'Sair', style: 'destructive', onPress: doLogout },
-            ]);
-          }
+          });
         }}
         activeOpacity={0.7}
       >

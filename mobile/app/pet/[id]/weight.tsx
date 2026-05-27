@@ -1,11 +1,11 @@
 import React from 'react';
-import { Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { usePet } from '../../../src/presentation/hooks/usePets';
 import { useWeight, useCreateWeight } from '../../../src/presentation/hooks/useWeight';
 import { WeightForm } from '../../../src/presentation/components/weight/WeightForm';
 import { LoadingSpinner } from '../../../src/presentation/components/shared/LoadingSpinner';
 import { CreateWeightInput } from '../../../src/domain/entities/Weight';
+import { notify } from '../../../src/shared/utils/notify';
 
 export default function AddWeightScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -24,12 +24,10 @@ export default function AddWeightScreen() {
   const handleSubmit = (data: CreateWeightInput) => {
     createWeight.mutate(data, {
       onSuccess: () => {
-        Alert.alert('Registrado! ⚖️', `Peso de ${pet.name} atualizado.`, [
-          { text: 'OK', onPress: () => router.back() },
-        ]);
+        notify('Registrado! ⚖️', `Peso de ${pet.name} atualizado.`, () => router.back());
       },
       onError: () => {
-        Alert.alert('Erro', 'Não foi possível registrar o peso.');
+        notify('Erro', 'Não foi possível registrar o peso.');
       },
     });
   };

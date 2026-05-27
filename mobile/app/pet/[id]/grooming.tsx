@@ -1,11 +1,11 @@
 import React from 'react';
-import { Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { usePet } from '../../../src/presentation/hooks/usePets';
 import { useCreateGrooming } from '../../../src/presentation/hooks/useGrooming';
 import { GroomingForm } from '../../../src/presentation/components/grooming/GroomingForm';
 import { LoadingSpinner } from '../../../src/presentation/components/shared/LoadingSpinner';
 import { CreateGroomingInput } from '../../../src/domain/entities/Grooming';
+import { notify } from '../../../src/shared/utils/notify';
 
 export default function AddGroomingScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -19,12 +19,10 @@ export default function AddGroomingScreen() {
   const handleSubmit = (data: CreateGroomingInput) => {
     createGrooming.mutate(data, {
       onSuccess: () => {
-        Alert.alert('Registrado! 🛁', `Banho de ${pet.name} registrado com sucesso.`, [
-          { text: 'OK', onPress: () => router.back() },
-        ]);
+        notify('Registrado! 🛁', `Banho de ${pet.name} registrado com sucesso.`, () => router.back());
       },
       onError: () => {
-        Alert.alert('Erro', 'Não foi possível registrar o banho.');
+        notify('Erro', 'Não foi possível registrar o banho.');
       },
     });
   };

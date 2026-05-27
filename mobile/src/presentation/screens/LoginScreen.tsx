@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Alert,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
@@ -15,6 +14,7 @@ import { useAuthStore } from '../stores/authStore';
 import { useTutorStore } from '../stores/tutorStore';
 import { api } from '../../infrastructure/api/client';
 import { colors, spacing, radius, fontSize, shadow } from '../../shared/theme';
+import { notify } from '../../shared/utils/notify';
 
 interface AuthResponse {
   token: string;
@@ -37,15 +37,15 @@ export function LoginScreen() {
 
   const handleSubmit = async () => {
     if (isRegister && !name.trim()) {
-      Alert.alert('Campo obrigatório', 'Informe seu nome.');
+      notify('Campo obrigatório', 'Informe seu nome.');
       return;
     }
     if (!email.trim()) {
-      Alert.alert('Campo obrigatório', 'Informe seu e-mail.');
+      notify('Campo obrigatório', 'Informe seu e-mail.');
       return;
     }
     if (!password || password.length < 6) {
-      Alert.alert('Senha fraca', 'A senha deve ter no mínimo 6 caracteres.');
+      notify('Senha fraca', 'A senha deve ter no mínimo 6 caracteres.');
       return;
     }
 
@@ -67,7 +67,7 @@ export function LoginScreen() {
 
       router.replace('/(tabs)');
     } catch (err: any) {
-      Alert.alert('Erro', err.message ?? 'Falha na autenticação.');
+      notify('Erro', err.message ?? 'Falha na autenticação.');
     } finally {
       setLoading(false);
     }
