@@ -4,11 +4,9 @@ import { useRouter } from 'expo-router';
 import { useTutorStore } from '../stores/tutorStore';
 import { useAuthStore } from '../stores/authStore';
 import { useTutors } from '../hooks/useTutors';
-import { TutorSelector } from '../components/tutor/TutorSelector';
 import { LoadingSpinner } from '../components/shared/LoadingSpinner';
 import { WebContainer } from '../components/shared/WebContainer';
 import { api } from '../../infrastructure/api/client';
-import { Tutor } from '../../domain/entities/Tutor';
 import { colors, spacing, radius, fontSize, shadow } from '../../shared/theme';
 
 function ChangePasswordSection() {
@@ -116,95 +114,67 @@ function ChangePasswordSection() {
 export function TutorProfileScreen() {
   const router = useRouter();
   const { data: tutors, isLoading } = useTutors();
-  const { activeTutor, activeTutorId, setActiveTutor } = useTutorStore();
+  const { activeTutor, setActiveTutor } = useTutorStore();
   const authUser = useAuthStore((s) => s.user);
 
   if (isLoading) return <LoadingSpinner />;
 
-  if (!tutors?.length) {
-    return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyEmoji}>👤</Text>
-        <Text style={styles.emptyTitle}>Nenhum tutor cadastrado</Text>
-        <Text style={styles.emptySub}>Cadastre o primeiro tutor para começar.</Text>
-        <TouchableOpacity
-          style={styles.createButton}
-          onPress={() => router.push('/tutor/new')}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.createButtonText}>Cadastrar Tutor</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
+  const tutor = activeTutor ?? tutors?.[0] ?? null;
 
-  const handleSelect = (tutor: Tutor) => {
+  if (tutor && !activeTutor) {
     setActiveTutor(tutor);
-  };
-
-  const currentTutor = activeTutor ?? tutors[0];
+  }
 
   return (
     <WebContainer>
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
-        <Text style={styles.headerEmoji}>👥</Text>
-        <Text style={styles.headerTitle}>Perfil</Text>
-        <Text style={styles.headerSub}>Gerencie sua conta e tutores</Text>
+        <Text style={styles.headerEmoji}>👤</Text>
+        <Text style={styles.headerTitle}>Meu Perfil</Text>
       </View>
 
-      <TutorSelector
-        tutors={tutors}
-        activeTutorId={activeTutorId}
-        onSelect={handleSelect}
-        onAddNew={() => router.push('/tutor/new')}
-      />
-
-      {currentTutor && (
+      {tutor ? (
         <View style={styles.profileCard}>
           <View style={styles.profileAvatar}>
             <Text style={styles.profileAvatarText}>
-              {currentTutor.name.charAt(0).toUpperCase()}
+              {tutor.name.charAt(0).toUpperCase()}
             </Text>
           </View>
 
-          <Text style={styles.profileName}>{currentTutor.name}</Text>
-
-          {currentTutor.email && (
-            <View style={styles.infoRow}>
-              <Text style={styles.infoIcon}>✉️</Text>
-              <Text style={styles.infoText}>{currentTutor.email}</Text>
-            </View>
-          )}
-
-          {currentTutor.phone && (
-            <View style={styles.infoRow}>
-              <Text style={styles.infoIcon}>📱</Text>
-              <Text style={styles.infoText}>{currentTutor.phone}</Text>
-            </View>
-          )}
+          <Text style={styles.profileName}>{tutor.name}</Text>
 
           {authUser && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoIcon}>🔑</Text>
+              <Text style={styles.infoIcon}>✉️</Text>
               <Text style={styles.infoText}>{authUser.email}</Text>
+            </View>
+          )}
+
+          {tutor.phone && (
+            <View style={styles.infoRow}>
+              <Text style={styles.infoIcon}>📱</Text>
+              <Text style={styles.infoText}>{tutor.phone}</Text>
             </View>
           )}
 
           <View style={styles.infoRow}>
             <Text style={styles.infoIcon}>📅</Text>
             <Text style={styles.infoText}>
-              Desde {new Date(currentTutor.createdAt).toLocaleDateString('pt-BR')}
+              Membro desde {new Date(tutor.createdAt).toLocaleDateString('pt-BR')}
             </Text>
           </View>
 
           <TouchableOpacity
             style={styles.editButton}
-            onPress={() => router.push(`/tutor/${currentTutor.id}`)}
+            onPress={() => router.push(`/tutor/${tutor.id}`)}
             activeOpacity={0.7}
           >
             <Text style={styles.editButtonText}>Editar Perfil</Text>
           </TouchableOpacity>
+        </View>
+      ) : (
+        <View style={styles.emptyCard}>
+          <Text style={styles.emptyText}>Perfil não encontrado.</Text>
         </View>
       )}
 
@@ -243,16 +213,6 @@ const styles = StyleSheet.create({
   header: { marginBottom: spacing.xl },
   headerEmoji: { fontSize: 32, marginBottom: spacing.sm },
   headerTitle: { fontSize: fontSize.xxl, fontWeight: '800', color: colors.text },
-  headerSub: { fontSize: fontSize.md, color: colors.textSecondary, marginTop: spacing.xs },
-  emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background, padding: spacing.xxxl },
-  emptyEmoji: { fontSize: 64, marginBottom: spacing.xl },
-  emptyTitle: { fontSize: fontSize.xl, fontWeight: '700', color: colors.text },
-  emptySub: { fontSize: fontSize.md, color: colors.textSecondary, marginTop: spacing.sm, textAlign: 'center' },
-  createButton: {
-    backgroundColor: colors.primary, borderRadius: radius.lg, paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xxxl, marginTop: spacing.xxl, ...shadow.md,
-  },
-  createButtonText: { color: colors.textInverse, fontSize: fontSize.lg, fontWeight: '700' },
   profileCard: {
     backgroundColor: colors.surface, borderRadius: radius.xl, padding: spacing.xxl,
     alignItems: 'center', ...shadow.md,
@@ -272,6 +232,11 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md, paddingHorizontal: spacing.xxxl, marginTop: spacing.lg,
   },
   editButtonText: { color: colors.primary, fontSize: fontSize.md, fontWeight: '700' },
+  emptyCard: {
+    backgroundColor: colors.surface, borderRadius: radius.xl, padding: spacing.xxl,
+    alignItems: 'center', ...shadow.sm,
+  },
+  emptyText: { color: colors.textMuted, fontSize: fontSize.md },
 
   changePassButton: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
@@ -280,7 +245,6 @@ const styles = StyleSheet.create({
   },
   changePassIcon: { fontSize: 18, marginRight: spacing.sm },
   changePassText: { fontSize: fontSize.md, fontWeight: '600', color: colors.text },
-
   passwordCard: {
     backgroundColor: colors.surface, borderRadius: radius.xl,
     padding: spacing.xxl, marginTop: spacing.xl, ...shadow.md,

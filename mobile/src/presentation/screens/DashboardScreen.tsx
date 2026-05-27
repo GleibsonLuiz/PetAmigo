@@ -148,17 +148,6 @@ export function DashboardScreen() {
   return (
     <WebContainer maxWidth={1200}>
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {tutors && tutors.length > 1 && (
-        <View style={styles.tutorRow}>
-          <TutorSelector
-            tutors={tutors}
-            activeTutorId={activeTutorId}
-            onSelect={handleSelectTutor}
-            onAddNew={() => router.push('/tutor/new')}
-          />
-        </View>
-      )}
-
       <View style={styles.greeting}>
         <Text style={styles.greetingText}>{getGreeting()},</Text>
         <Text style={styles.greetingName}>{tutorName}! 👋</Text>
@@ -414,19 +403,19 @@ export function DashboardScreen() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionCard}
-            onPress={() => router.push('/tutor/new')}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.actionEmoji}>👤</Text>
-            <Text style={styles.actionLabel}>Novo Tutor</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionCard}
             onPress={() => router.push('/(tabs)/vaccines' as any)}
             activeOpacity={0.7}
           >
             <Text style={styles.actionEmoji}>💉</Text>
             <Text style={styles.actionLabel}>Vacinas</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => router.push('/(tabs)/pets' as any)}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.actionEmoji}>📋</Text>
+            <Text style={styles.actionLabel}>Meus Pets</Text>
           </TouchableOpacity>
         </View>
       </View>
