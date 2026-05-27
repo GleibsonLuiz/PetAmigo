@@ -66,6 +66,14 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name="pet/[id]/weight"
+            options={{
+              title: 'Registrar Peso',
+              presentation: 'modal',
+              headerStyle: { backgroundColor: '#6C63FF' },
+            }}
+          />
+          <Stack.Screen
             name="pet/[id]/card"
             options={{
               title: 'Carteira de Vacinação',

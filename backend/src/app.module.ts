@@ -6,6 +6,7 @@ import { VaccinationsModule } from './application/vaccinations/vaccinations.modu
 import { TutorsModule } from './application/tutors/tutors.module';
 import { GroomingModule } from './application/grooming/grooming.module';
 import { AuthModule } from './application/auth/auth.module';
+import { WeightModule } from './application/weight/weight.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthModule } from './application/auth/auth.module';
     VaccinationsModule,
     TutorsModule,
     GroomingModule,
+    WeightModule,
   ],
 })
 export class AppModule {}

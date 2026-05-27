@@ -4,8 +4,10 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { usePet } from '../../src/presentation/hooks/usePets';
 import { useVaccinations } from '../../src/presentation/hooks/useVaccinations';
 import { useGrooming } from '../../src/presentation/hooks/useGrooming';
+import { useWeight } from '../../src/presentation/hooks/useWeight';
 import { VaccinationCard } from '../../src/presentation/components/vaccination/VaccinationCard';
 import { GroomingCard } from '../../src/presentation/components/grooming/GroomingCard';
+import { WeightChart } from '../../src/presentation/components/weight/WeightChart';
 import { LoadingSpinner } from '../../src/presentation/components/shared/LoadingSpinner';
 import {
   colors,
@@ -24,6 +26,7 @@ export default function PetDetailScreen() {
   const { data: pet, isLoading: loadingPet } = usePet(id);
   const { data: vaccinations, isLoading: loadingVacc } = useVaccinations(id);
   const { data: groomings, isLoading: loadingGroom } = useGrooming(id);
+  const { data: weights } = useWeight(id);
 
   if (loadingPet || loadingVacc || loadingGroom) return <LoadingSpinner />;
   if (!pet) {
@@ -98,6 +101,13 @@ export default function PetDetailScreen() {
         <Text style={styles.cardButtonArrow}>›</Text>
       </TouchableOpacity>
 
+      {/* Weight Section */}
+      {weights && weights.length > 0 && (
+        <View style={styles.weightSection}>
+          <WeightChart records={weights} />
+        </View>
+      )}
+
       {/* Content */}
       <FlatList
         data={[]}
@@ -168,6 +178,13 @@ export default function PetDetailScreen() {
       {/* FABs */}
       <View style={styles.fabContainer}>
         <TouchableOpacity
+          style={[styles.fab, { backgroundColor: '#7E57C2' }]}
+          onPress={() => router.push(`/pet/${id}/weight`)}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.fabIcon}>⚖️</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
           style={[styles.fab, { backgroundColor: '#00ACC1' }]}
           onPress={() => router.push(`/pet/${id}/grooming`)}
           activeOpacity={0.85}
@@ -216,6 +233,10 @@ const styles = StyleSheet.create({
   statCard: { flex: 1, backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: radius.md, paddingVertical: spacing.md, alignItems: 'center' },
   statNumber: { fontSize: fontSize.lg, fontWeight: '800', color: '#FFF' },
   statLabel: { fontSize: fontSize.xs, color: 'rgba(255,255,255,0.75)', fontWeight: '500', marginTop: 2 },
+
+  weightSection: {
+    paddingHorizontal: spacing.lg, marginTop: spacing.md,
+  },
 
   cardButton: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface,
