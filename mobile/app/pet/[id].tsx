@@ -84,6 +84,20 @@ export default function PetDetailScreen() {
         </View>
       </View>
 
+      {/* Vaccination Card Button */}
+      <TouchableOpacity
+        style={styles.cardButton}
+        onPress={() => router.push(`/pet/${id}/card`)}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.cardButtonIcon}>📋</Text>
+        <View style={styles.cardButtonInfo}>
+          <Text style={styles.cardButtonTitle}>Carteira de Vacinação</Text>
+          <Text style={styles.cardButtonSub}>Documento digital para apresentar no veterinário</Text>
+        </View>
+        <Text style={styles.cardButtonArrow}>›</Text>
+      </TouchableOpacity>
+
       {/* Content */}
       <FlatList
         data={[]}
@@ -202,6 +216,17 @@ const styles = StyleSheet.create({
   statCard: { flex: 1, backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: radius.md, paddingVertical: spacing.md, alignItems: 'center' },
   statNumber: { fontSize: fontSize.lg, fontWeight: '800', color: '#FFF' },
   statLabel: { fontSize: fontSize.xs, color: 'rgba(255,255,255,0.75)', fontWeight: '500', marginTop: 2 },
+
+  cardButton: {
+    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface,
+    marginHorizontal: spacing.lg, marginTop: spacing.lg, borderRadius: radius.lg,
+    padding: spacing.lg, ...shadow.sm,
+  },
+  cardButtonIcon: { fontSize: 28, marginRight: spacing.md },
+  cardButtonInfo: { flex: 1 },
+  cardButtonTitle: { fontSize: fontSize.md, fontWeight: '700', color: colors.primary },
+  cardButtonSub: { fontSize: fontSize.xs, color: colors.textMuted, marginTop: 2 },
+  cardButtonArrow: { fontSize: 24, color: colors.textMuted, fontWeight: '300' },
 
   list: { padding: spacing.lg, paddingBottom: 40 },
 
