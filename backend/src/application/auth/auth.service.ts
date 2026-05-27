@@ -63,6 +63,23 @@ export class AuthService {
     return this.buildResponse(user);
   }
 
+  async changePassword(userId: string, currentPassword: string, newPassword: string) {
+    const { rows } = await this.pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+    if (!rows.length) throw new UnauthorizedException('Usuário não encontrado');
+
+    const user = rows[0] as UserRow;
+    const valid = await bcrypt.compare(currentPassword, user.password_hash);
+    if (!valid) throw new UnauthorizedException('Senha atual incorreta');
+
+    const newHash = await bcrypt.hash(newPassword, 10);
+    await this.pool.query(
+      'UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2',
+      [newHash, userId],
+    );
+
+    return { message: 'Senha alterada com sucesso' };
+  }
+
   async findAllUsers() {
     const { rows } = await this.pool.query(
       `SELECT u.id, u.email, u.name, u.role, u.tutor_id, u.created_at,

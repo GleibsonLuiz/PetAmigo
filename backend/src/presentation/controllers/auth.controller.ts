@@ -15,6 +15,11 @@ class LoginDto {
   @IsString() password!: string;
 }
 
+class ChangePasswordDto {
+  @IsString() currentPassword!: string;
+  @IsString() @MinLength(6) newPassword!: string;
+}
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -33,6 +38,12 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   getProfile(@Req() req: any) {
     return req.user;
+  }
+
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  changePassword(@Req() req: any, @Body() dto: ChangePasswordDto) {
+    return this.authService.changePassword(req.user.id, dto.currentPassword, dto.newPassword);
   }
 }
 
