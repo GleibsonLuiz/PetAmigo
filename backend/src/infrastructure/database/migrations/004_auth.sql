@@ -19,7 +19,7 @@ INSERT INTO users (id, email, password_hash, name, role)
 VALUES (
     '00000000-0000-0000-0000-000000000099',
     'admin@petamigo.app',
-    '$2b$10$8KzaNdKIMyOkASCKiSBEre6K3VDLbSgWHIBvaFJDh9.gy2AnMqOWS',
+    '$2b$10$WHwdi1AHrtCcsagjUi4Zp.sEbaH1HFQo8NTBdUx5Z9eRLCloM.AIa',
     'Administrador',
     'admin'
 );
