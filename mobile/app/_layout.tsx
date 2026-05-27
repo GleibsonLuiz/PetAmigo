@@ -65,6 +65,14 @@ export default function RootLayout() {
             headerStyle: { backgroundColor: '#6C63FF' },
           }}
         />
+        <Stack.Screen
+          name="pet/[id]/grooming"
+          options={{
+            title: 'Registrar Banho',
+            presentation: 'modal',
+            headerStyle: { backgroundColor: '#00ACC1' },
+          }}
+        />
       </Stack>
     </QueryClientProvider>
   );
