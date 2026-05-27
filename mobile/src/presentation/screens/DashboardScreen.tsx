@@ -13,9 +13,11 @@ import { usePets } from '../hooks/usePets';
 import { useTutors } from '../hooks/useTutors';
 import { useTutorStore } from '../stores/tutorStore';
 import { useAllVaccinations } from '../hooks/useVaccinations';
+import { useAllGrooming } from '../hooks/useGrooming';
 import { TutorSelector } from '../components/tutor/TutorSelector';
 import { LoadingSpinner } from '../components/shared/LoadingSpinner';
 import { Tutor } from '../../domain/entities/Tutor';
+import { SERVICE_TYPE_LABELS, SERVICE_TYPE_EMOJI, GroomingServiceType } from '../../domain/entities/Grooming';
 import {
   colors,
   spacing,
@@ -51,9 +53,9 @@ export function DashboardScreen() {
   const { data: pets, isLoading: loadingPets } = usePets();
   const { data: tutors, isLoading: loadingTutors } = useTutors();
   const { activeTutor, activeTutorId, setActiveTutor } = useTutorStore();
-  const { data: allVaccinations, isLoading: loadingVacc } = useAllVaccinations(
-    pets?.map((p) => p.id) ?? [],
-  );
+  const petIds = pets?.map((p) => p.id) ?? [];
+  const { data: allVaccinations, isLoading: loadingVacc } = useAllVaccinations(petIds);
+  const { data: allGroomings, isLoading: loadingGroom } = useAllGrooming(petIds);
 
   useEffect(() => {
     if (!activeTutorId && tutors?.length) {
@@ -110,6 +112,28 @@ export function DashboardScreen() {
     })
     .filter((p) => p.daysUntilBday <= 30)
     .sort((a, b) => a.daysUntilBday - b.daysUntilBday) ?? [];
+
+  const now30 = new Date();
+  now30.setDate(now30.getDate() - 30);
+  const groomingThisMonth = allGroomings?.filter(
+    (g) => new Date(g.groomingDate) >= now30,
+  ) ?? [];
+  const monthlySpent = groomingThisMonth.reduce((sum, g) => sum + (g.price ?? 0), 0);
+
+  const upcomingGroomings = allGroomings
+    ?.filter((g) => {
+      if (!g.nextDate) return false;
+      const days = daysUntil(g.nextDate);
+      return days >= 0 && days <= 30;
+    })
+    .sort((a, b) => new Date(a.nextDate!).getTime() - new Date(b.nextDate!).getTime())
+    ?? [];
+
+  const overdueGroomings = allGroomings
+    ?.filter((g) => {
+      if (!g.nextDate) return false;
+      return daysUntil(g.nextDate) < 0;
+    }) ?? [];
 
   const tutorName = activeTutor?.name.split(' ')[0] ?? 'Tutor';
   const totalPets = pets?.length ?? 0;
@@ -275,6 +299,90 @@ export function DashboardScreen() {
         </View>
       )}
 
+      {/* Grooming Overdue */}
+      {overdueGroomings.length > 0 && (
+        <View style={styles.groomAlertCard}>
+          <View style={styles.alertHeader}>
+            <Text style={styles.alertEmoji}>🛁</Text>
+            <Text style={styles.groomAlertTitle}>Banhos atrasados</Text>
+          </View>
+          {overdueGroomings.slice(0, 3).map((g) => {
+            const pet = pets?.find((p) => p.id === g.petId);
+            const days = Math.abs(daysUntil(g.nextDate!));
+            const sType = g.serviceType as GroomingServiceType;
+            return (
+              <TouchableOpacity
+                key={g.id}
+                style={styles.alertItem}
+                onPress={() => router.push(`/pet/${g.petId}`)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.alertPetEmoji}>
+                  {SPECIES_EMOJI[pet?.species ?? 'other']}
+                </Text>
+                <View style={styles.alertInfo}>
+                  <Text style={styles.alertPetName}>{pet?.name}</Text>
+                  <Text style={styles.groomAlertSub}>
+                    {SERVICE_TYPE_LABELS[sType]} · {days} dia{days > 1 ? 's' : ''} de atraso
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
+
+      {/* Upcoming Grooming */}
+      {upcomingGroomings.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>🛁 Próximos banhos</Text>
+          {upcomingGroomings.slice(0, 5).map((g) => {
+            const pet = pets?.find((p) => p.id === g.petId);
+            const days = daysUntil(g.nextDate!);
+            const sType = g.serviceType as GroomingServiceType;
+            return (
+              <TouchableOpacity
+                key={g.id}
+                style={styles.vaccineRow}
+                onPress={() => router.push(`/pet/${g.petId}`)}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.vaccineDate, { backgroundColor: '#E0F7FA' }, days <= 3 && { backgroundColor: colors.warningSoft }]}>
+                  <Text style={[styles.vaccineDateText, { color: '#00838F' }, days <= 3 && { color: colors.warning }]}>
+                    {formatDateBR(g.nextDate!)}
+                  </Text>
+                </View>
+                <View style={styles.vaccineInfo}>
+                  <Text style={styles.vaccinePet}>
+                    {SPECIES_EMOJI[pet?.species ?? 'other']} {pet?.name}
+                  </Text>
+                  <Text style={styles.vaccineLabel}>
+                    {SERVICE_TYPE_LABELS[sType]} · {g.location}
+                  </Text>
+                </View>
+                <Text style={styles.vaccineDays}>
+                  {days === 0 ? 'Hoje!' : `${days}d`}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
+
+      {/* Monthly Grooming Spending */}
+      {monthlySpent > 0 && (
+        <View style={styles.spendingCard}>
+          <View style={styles.spendingHeader}>
+            <Text style={styles.spendingEmoji}>💰</Text>
+            <Text style={styles.spendingTitle}>Gastos com banho (30 dias)</Text>
+          </View>
+          <Text style={styles.spendingAmount}>R$ {monthlySpent.toFixed(2)}</Text>
+          <Text style={styles.spendingCount}>
+            {groomingThisMonth.length} banho{groomingThisMonth.length > 1 ? 's' : ''} realizado{groomingThisMonth.length > 1 ? 's' : ''}
+          </Text>
+        </View>
+      )}
+
       {/* Quick Actions */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>⚡ Ações rápidas</Text>
@@ -382,6 +490,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md, paddingVertical: spacing.xs,
   },
   birthdayDays: { fontSize: fontSize.xs, fontWeight: '700', color: colors.warning },
+
+  groomAlertCard: {
+    backgroundColor: '#E0F7FA', borderRadius: radius.lg, padding: spacing.lg,
+    marginBottom: spacing.xl, borderLeftWidth: 4, borderLeftColor: '#00ACC1',
+  },
+  groomAlertTitle: { fontSize: fontSize.md, fontWeight: '700', color: '#00838F' },
+  groomAlertSub: { fontSize: fontSize.sm, color: '#00838F', marginTop: 1 },
+
+  spendingCard: {
+    backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.xl,
+    marginBottom: spacing.xl, alignItems: 'center', ...shadow.md,
+  },
+  spendingHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.md },
+  spendingEmoji: { fontSize: 20, marginRight: spacing.sm },
+  spendingTitle: { fontSize: fontSize.sm, fontWeight: '600', color: colors.textSecondary },
+  spendingAmount: { fontSize: 36, fontWeight: '800', color: '#00838F' },
+  spendingCount: { fontSize: fontSize.sm, color: colors.textMuted, marginTop: spacing.xs },
 
   actionsGrid: { flexDirection: 'row', gap: spacing.md },
   actionCard: {
