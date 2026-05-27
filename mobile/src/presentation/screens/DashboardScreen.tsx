@@ -161,7 +161,7 @@ export function DashboardScreen() {
       <View style={styles.statsGrid}>
         <TouchableOpacity
           style={[styles.statCard, { backgroundColor: colors.primarySoft }]}
-          onPress={() => router.push('/(tabs)/index' as any)}
+          onPress={() => router.push('/(tabs)/pets' as any)}
           activeOpacity={0.7}
         >
           <Text style={styles.statEmoji}>🐾</Text>
