@@ -80,14 +80,14 @@ export function DashboardScreen() {
         <Text style={styles.onboardingEmoji}>🐾</Text>
         <Text style={styles.onboardingTitle}>Bem-vindo ao PetAmigo!</Text>
         <Text style={styles.onboardingSub}>
-          Cadastre-se como tutor para começar{'\n'}a cuidar dos seus pets.
+          Complete seu perfil para começar{'\n'}a cuidar dos seus pets.
         </Text>
         <TouchableOpacity
           style={styles.onboardingButton}
-          onPress={() => router.push('/tutor/new')}
+          onPress={() => router.push('/(tabs)/profile' as any)}
           activeOpacity={0.85}
         >
-          <Text style={styles.onboardingButtonText}>Começar</Text>
+          <Text style={styles.onboardingButtonText}>Completar Perfil</Text>
         </TouchableOpacity>
       </View>
     );
