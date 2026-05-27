@@ -1,3 +1,3 @@
-import { PetListScreen } from '../../src/presentation/screens/PetListScreen';
+import { DashboardScreen } from '../../src/presentation/screens/DashboardScreen';
 
-export default PetListScreen;
+export default DashboardScreen;
