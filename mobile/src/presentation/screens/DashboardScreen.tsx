@@ -53,12 +53,13 @@ function formatDateBR(date: Date | string): string {
 export function DashboardScreen() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { width: screenWidth } = useWindowDimensions();
   const { data: pets, isLoading: loadingPets } = usePets();
   const { data: tutors, isLoading: loadingTutors } = useTutors();
   const { activeTutor, activeTutorId, setActiveTutor } = useTutorStore();
   const petIds = pets?.map((p) => p.id) ?? [];
-  const { data: allVaccinations, isLoading: loadingVacc } = useAllVaccinations(petIds);
-  const { data: allGroomings, isLoading: loadingGroom } = useAllGrooming(petIds);
+  const { data: allVaccinations } = useAllVaccinations(petIds);
+  const { data: allGroomings } = useAllGrooming(petIds);
 
   useEffect(() => {
     if (!activeTutorId && tutors?.length) {
@@ -142,7 +143,6 @@ export function DashboardScreen() {
   const totalPets = pets?.length ?? 0;
   const totalVaccines = allVaccinations?.length ?? 0;
 
-  const { width: screenWidth } = useWindowDimensions();
   const isDesktop = Platform.OS === 'web' && screenWidth > 800;
 
   return (

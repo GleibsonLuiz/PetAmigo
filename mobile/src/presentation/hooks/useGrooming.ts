@@ -1,4 +1,4 @@
-import { useQuery, useQueries, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { GroomingRepositoryImpl } from '../../infrastructure/repositories/GroomingRepositoryImpl';
 import { CreateGroomingInput } from '../../domain/entities/Grooming';
 
@@ -13,18 +13,17 @@ export function useGrooming(petId: string) {
 }
 
 export function useAllGrooming(petIds: string[]) {
-  const queries = useQueries({
-    queries: petIds.map((petId) => ({
-      queryKey: ['grooming', petId],
-      queryFn: () => groomingRepo.findByPetId(petId),
-      enabled: !!petId,
-    })),
+  const key = petIds.sort().join(',');
+  return useQuery({
+    queryKey: ['all-grooming', key],
+    queryFn: async () => {
+      const results = await Promise.all(
+        petIds.map((id) => groomingRepo.findByPetId(id)),
+      );
+      return results.flat();
+    },
+    enabled: petIds.length > 0,
   });
-
-  const isLoading = queries.some((q) => q.isLoading);
-  const data = isLoading ? undefined : queries.flatMap((q) => q.data ?? []);
-
-  return { data, isLoading };
 }
 
 export function useCreateGrooming() {

@@ -1,4 +1,4 @@
-import { useQuery, useQueries, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { VaccinationRepositoryImpl } from '../../infrastructure/repositories/VaccinationRepositoryImpl';
 import { CreateVaccinationInput, VaccinationRecord } from '../../domain/entities/Vaccination';
 
@@ -43,16 +43,15 @@ export function useDeleteVaccination(petId: string) {
 }
 
 export function useAllVaccinations(petIds: string[]) {
-  const queries = useQueries({
-    queries: petIds.map((petId) => ({
-      queryKey: ['vaccinations', petId],
-      queryFn: () => vaccinationRepo.findByPetId(petId),
-      enabled: !!petId,
-    })),
+  const key = petIds.sort().join(',');
+  return useQuery({
+    queryKey: ['all-vaccinations', key],
+    queryFn: async () => {
+      const results = await Promise.all(
+        petIds.map((id) => vaccinationRepo.findByPetId(id)),
+      );
+      return results.flat();
+    },
+    enabled: petIds.length > 0,
   });
-
-  const isLoading = queries.some((q) => q.isLoading);
-  const data = isLoading ? undefined : queries.flatMap((q) => q.data ?? []);
-
-  return { data, isLoading };
 }
