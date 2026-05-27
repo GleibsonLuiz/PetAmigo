@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "PetAmigo",
+    "slug": "petamigo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "petamigo",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "plugins": [
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#4A90D9"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O app precisa de acesso às fotos para o perfil do pet."
+        }
+      ],
+      "expo-asset",
+      "expo-font"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.petamigo.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#4A90D9"
+      },
+      "package": "com.petamigo.app"
+    }
+  }
+}

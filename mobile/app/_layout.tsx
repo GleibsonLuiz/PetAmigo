@@ -1,0 +1,47 @@
+import { Stack } from 'expo-router';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { StatusBar } from 'expo-status-bar';
+import { View } from 'react-native';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      retry: 2,
+    },
+  },
+});
+
+export default function RootLayout() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <StatusBar style="light" />
+      <Stack
+        screenOptions={{
+          headerStyle: { backgroundColor: '#6C63FF' },
+          headerTintColor: '#FFF',
+          headerTitleStyle: { fontWeight: '700' },
+          headerShadowVisible: false,
+          contentStyle: { backgroundColor: '#F5F6FA' },
+        }}
+      >
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="pet/new"
+          options={{
+            title: 'Novo Pet',
+            presentation: 'modal',
+            headerStyle: { backgroundColor: '#6C63FF' },
+          }}
+        />
+        <Stack.Screen
+          name="pet/[id]"
+          options={{
+            title: '',
+            headerTransparent: true,
+          }}
+        />
+      </Stack>
+    </QueryClientProvider>
+  );
+}
