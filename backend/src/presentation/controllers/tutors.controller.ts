@@ -6,19 +6,23 @@ import {
   Delete,
   Body,
   Param,
+  Req,
+  UseGuards,
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { TutorsService } from '../../application/tutors/tutors.service';
 import { CreateTutorDto } from '../dtos/create-tutor.dto';
 import { UpdateTutorDto } from '../dtos/update-tutor.dto';
+import { JwtAuthGuard } from '../../application/auth/jwt.guard';
 
 @Controller('tutors')
+@UseGuards(JwtAuthGuard)
 export class TutorsController {
   constructor(private readonly tutorsService: TutorsService) {}
 
   @Get()
-  findAll() {
-    return this.tutorsService.findAll();
+  findAll(@Req() req: any) {
+    return this.tutorsService.findByUserId(req.user.id);
   }
 
   @Get(':id')
@@ -27,8 +31,8 @@ export class TutorsController {
   }
 
   @Post()
-  create(@Body() dto: CreateTutorDto) {
-    return this.tutorsService.create(dto);
+  create(@Req() req: any, @Body() dto: CreateTutorDto) {
+    return this.tutorsService.createForUser(req.user.id, dto);
   }
 
   @Patch(':id')
@@ -47,11 +51,6 @@ export class TutorsController {
   @Get(':id/pets')
   getPets(@Param('id', ParseUUIDPipe) id: string) {
     return this.tutorsService.getPetsByTutor(id);
-  }
-
-  @Get('pets/:petId/tutors')
-  getTutorsByPet(@Param('petId', ParseUUIDPipe) petId: string) {
-    return this.tutorsService.getTutorsByPet(petId);
   }
 
   @Post(':tutorId/pets/:petId/share')

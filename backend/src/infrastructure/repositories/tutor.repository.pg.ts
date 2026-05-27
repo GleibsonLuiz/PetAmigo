@@ -21,6 +21,17 @@ export class TutorRepositoryPg extends TutorRepositoryPort {
     return rows.map(this.toTutorDomain);
   }
 
+  async findByUserId(userId: string): Promise<Tutor[]> {
+    const { rows } = await this.pool.query(
+      `SELECT t.* FROM tutors t
+       JOIN users u ON u.tutor_id = t.id
+       WHERE u.id = $1
+       ORDER BY t.created_at DESC`,
+      [userId],
+    );
+    return rows.map(this.toTutorDomain);
+  }
+
   async findById(id: string): Promise<Tutor | null> {
     const { rows } = await this.pool.query('SELECT * FROM tutors WHERE id = $1', [id]);
     return rows[0] ? this.toTutorDomain(rows[0]) : null;
@@ -33,6 +44,15 @@ export class TutorRepositoryPg extends TutorRepositoryPort {
       [tutor.name, tutor.email, tutor.phone, tutor.avatarUrl],
     );
     return this.toTutorDomain(rows[0]);
+  }
+
+  async createForUser(userId: string, data: Partial<Tutor>): Promise<Tutor> {
+    const tutor = await this.create(data);
+    await this.pool.query(
+      'UPDATE users SET tutor_id = $1 WHERE id = $2',
+      [tutor.id, userId],
+    );
+    return tutor;
   }
 
   async update(id: string, data: Partial<Tutor>): Promise<Tutor> {

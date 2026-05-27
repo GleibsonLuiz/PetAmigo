@@ -13,6 +13,10 @@ export class TutorsService {
     return this.tutorRepo.findAll();
   }
 
+  async findByUserId(userId: string): Promise<Tutor[]> {
+    return this.tutorRepo.findByUserId(userId);
+  }
+
   async findById(id: string): Promise<Tutor> {
     const tutor = await this.tutorRepo.findById(id);
     if (!tutor) throw new NotFoundException('Tutor não encontrado');
@@ -21,6 +25,10 @@ export class TutorsService {
 
   async create(dto: CreateTutorDto): Promise<Tutor> {
     return this.tutorRepo.create(dto);
+  }
+
+  async createForUser(userId: string, dto: CreateTutorDto): Promise<Tutor> {
+    return this.tutorRepo.createForUser(userId, dto);
   }
 
   async update(id: string, dto: UpdateTutorDto): Promise<Tutor> {
